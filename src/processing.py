@@ -9,13 +9,11 @@ def normalize(a, min_a = None, max_a = None):
 
 def load_and_save(category, filename):
     temp = np.loadtxt(os.path.join(dataset_folder, filename), dtype=np.float64, delimiter=',')
-    # 对mag进行归一化
     temp[:,1:] = normalize(temp[:,1:])
     np.save(os.path.join(output_folder, f"{dataset}_{category}.npy"), temp)
     print(category, temp.shape)
     return temp.shape
 
-# 因为后续可以在不同的维度上进行计算，所以加载的标签是针对于多个维度的。
 def load_and_save_label(category, filename, shape):
     # 传入的shape是包含着时间维的
     temp = np.zeros((shape[0],shape[1]-1))
@@ -29,7 +27,7 @@ def load_and_save_label(category, filename, shape):
     np.save(os.path.join(output_folder, f"{dataset}_{category}.npy"), temp)
 
 def load_data():
-    file_list = os.listdir(dataset_folder)
+    # file_list = os.listdir(dataset_folder)
     train_file = f'{dataset_folder}{dataset}_train.txt'
     test_file = f'{dataset_folder}{dataset}_test.txt'
     label_file = f'{dataset_folder}{dataset}_interpretation_label.txt'
@@ -38,10 +36,11 @@ def load_data():
     load_and_save_label('labels', label_file, shape)
 
 
-
+import sys
 if __name__ == '__main__':
-    dataset = '032_22790425-G0014'    #044_G0014-02820255，024_G0014-03250425，041_14110425-G0014
-    dataset_folder = f'/home/wamdm/xinli/AstroSet-20220907/Dataset_txt/{dataset}/'
+    dataset = sys.argv[1]
+    # dataset = 'AstrosetMiddle'
+    dataset_folder = f'./Dataset_txt/{dataset}/'
     output_folder = f"processed/{dataset}/"
     os.makedirs(output_folder, exist_ok=True)
     load_data()

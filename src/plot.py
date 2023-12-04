@@ -30,7 +30,7 @@ def plotauc(name, f1_list, f1auc, flat):
     
     
 # while testing
-def plotTwoLoss(name, y_true, pred12, pred1, loss12, loss1, losscluster, labels,predict_label,result,booltrain):
+def plotTwoLoss(name, y_true, pred12, pred1, loss12, loss1, labels,predict_label,result,booltrain):
     os.makedirs(os.path.join('plots', name), exist_ok=True)
     pdf = PdfPages(f'plots/{name}/{booltrain}_output.pdf')
     for dim in range(y_true.shape[1]):
@@ -53,7 +53,7 @@ def plotTwoLoss(name, y_true, pred12, pred1, loss12, loss1, losscluster, labels,
         ax2.plot(loss12[:, dim], '-',linewidth=0.1, color='r',label='loss12')
         
         th2 = result['threshold']
-        th_list2 = [th2] * len(losscluster)
+        th_list2 = [th2] * len(loss12)
 
         ax2.plot(th_list2, '--',linewidth=0.8, color='k', label='threshold')
         ax2.set_xlabel('Timestamp')
