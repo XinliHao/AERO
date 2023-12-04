@@ -69,8 +69,6 @@ class Main():
             model_class = getattr(ablation.ablation, env_config['model_name'])
             self.model = model_class(model_config['embed_time'], model_config['slide_win'], model_config['small_win'],model_config['fc_dim'],train_feas).to(env_config['device'])
         
-        
-        # 初始化参数
         for name, param in self.model.named_parameters():
             if 'reslayer.mask' in name:
                 nn.init.ones_(param)
@@ -119,25 +117,16 @@ class Main():
             result_flat, predict_label_flat, f1_list_flat, f1auc_flat = flat_pot_eval(result['loss12'], result['loss12'], labels[model_config['slide_win']:], q=model_config['q'],level=model_config['level'])
             print('=' * 30 + 'result' + '=' * 30)
             pprint(result_flat)
-            
-            result_best, bestpredict = bf_search(result['loss12'], labels[model_config['slide_win']:], start=model_config['bf_search_min'], end=model_config['bf_search_max'],
-                                                 step_num=int(abs(model_config['bf_search_max'] - model_config['bf_search_min']) / model_config['bf_search_step_size']),display_freq=50)
-            print('=' * 30 + 'Best_result' + '=' * 30)
-            pprint(result_best)
-            
-            plotTwoLoss('{}_{}_{}'.format(env_config['model_name'], env_config['dataset_name'], env_config['graph_type']),self.test[model_config['slide_win']:, 1:], result['pred12'], result['pred1'], result['loss12'],
-                            result['loss1'], labels[model_config['slide_win']:], bestpredict, result_best, booltrain='Best_test')
 
-            plotTwoLoss('{}_{}_{}'.format(env_config['model_name'],env_config['dataset_name'],env_config['graph_type']), self.test[model_config['slide_win']:, 1:], result['pred12'], result['pred1'], result['loss12'],
+            plotTwoLoss('{}_{}'.format(env_config['model_name'],env_config['dataset_name']), self.test[model_config['slide_win']:, 1:], result['pred12'], result['pred1'], result['loss12'],
                            result['loss1'],  labels[model_config['slide_win']:], predict_label_flat, result_flat, booltrain='test')
-            plotTwoLoss('{}_{}_{}'.format(env_config['model_name'],env_config['dataset_name'],env_config['graph_type']), self.train[model_config['slide_win']:, 1:], resultT['pred12'], resultT['pred1'], resultT['loss12'],
+            plotTwoLoss('{}_{}'.format(env_config['model_name'],env_config['dataset_name']), self.train[model_config['slide_win']:, 1:], resultT['pred12'], resultT['pred1'], resultT['loss12'],
                            resultT['loss1'], labels[model_config['slide_win']:], predict_label_flat, result_flat,booltrain='train')
 
-            plotauc('{}_{}_{}'.format(env_config['model_name'],env_config['dataset_name'],env_config['graph_type']), f1_list_flat, f1auc_flat, 'flat')
+            plotauc('{}_{}'.format(env_config['model_name'],env_config['dataset_name']), f1_list_flat, f1auc_flat, 'flat')
         
         if 'OnlyTemporal' in env_config['model_name'] or env_config['model_name']=='OnlyTemporalMulti' or env_config['model_name']=='OnlyConcurrent':
             result_flat, predict_label_flat, f1_list_flat, f1auc_flat = flat_pot_eval(result['loss1'], result['loss1'],labels[model_config['slide_win']:],q=model_config['q'],level=model_config['level'])
-            result_best = {'f1': 0, 'precision': 0, 'recall': 0, 'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0, 'threshold': 0}
             plotOneLoss('{}_{}_{}'.format(env_config['model_name'], env_config['dataset_name'], env_config['graph_type']),
                          self.test[model_config['slide_win']:, 1:], result['pred1'], result['loss1'], labels[model_config['slide_win']:], predict_label_flat, result_flat, booltrain='test')
             plotOneLoss('{}_{}_{}'.format(env_config['model_name'], env_config['dataset_name'], env_config['graph_type']),self.train[model_config['slide_win']:, 1:], resultT['pred1'],
@@ -157,7 +146,7 @@ class Main():
                        '%d'%result_flat['TP'],'%d'%result_flat['TN'],'%d'%result_flat['FP'],'%d'%result_flat['FN'],'%.4f'%result_flat['threshold'],
                        train_config['test'],train_config['retrain'],train_config['batch_size'],train_config['epoch_num'],train_config['lr'],
                        train_config['freeze_patience'],train_config['freeze_delta'],train_config['stop_patience'],train_config['stop_delta'],
-                       model_config['slide_win'],model_config['small_win'],model_config['embed_time'],model_config['level']]
+                       model_config['slide_win'],model_config['small_win'],model_config['embed_time'],model_config['level'],model_config['q']]
         data = pd.DataFrame([save_result])
         data.to_csv(os.path.join(env_config['output_folder'],'result.csv'),mode='a',header=False,index=False)
         
@@ -166,7 +155,6 @@ if __name__ == '__main__':
     
     # 消除随机性
     seed = 20222022
-    # random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)

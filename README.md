@@ -56,7 +56,7 @@ python3 main.py  --dataset_name SyntheticLow  --retrain --freeze_patience 5 --fr
 
 - AstrosetMiddle
 ```
-python3 main.py  --dataset_name AstrosetMiddle  --retrain --freeze_patience 5 --freeze_delta 0.01 --stop_patience 5 --stop_delta 0.01
+python3 main.py  --dataset_name AstrosetMiddle  --retrain --freeze_patience 5 --freeze_delta 0.01 --stop_patience 5 --stop_delta 0.005
 ```
 
 - AstrosetHigh

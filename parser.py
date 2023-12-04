@@ -20,7 +20,7 @@ def myconfig():
     parser = argparse.ArgumentParser(description='Time-Series Anomaly Detection')
     
     # env.config
-    parser.add_argument('--dataset_name',metavar='-d',type=str,required=False,default='SyntheticMiddle',help="dataset name")
+    parser.add_argument('--dataset_name',metavar='-d',type=str,required=False,default='AstrosetLow',help="dataset name")
     parser.add_argument('--model_name', metavar='-m', type=str, required=False, default='AERO')
 
     parser.add_argument('--device', type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")
@@ -30,16 +30,16 @@ def myconfig():
     # train config
     parser.add_argument('--test', action='store_true', help="test the model")
     parser.add_argument('--retrain', action='store_true', help="retrain the model")
-    parser.add_argument('--batch_size', type=int, default=8)
+    parser.add_argument('--batch_size', type=int, default=128)
     
     parser.add_argument('--epoch_num',type=int,default=100)
     
     parser.add_argument('--lr', type=float, default=0.001)
     parser.add_argument('--freeze_patience',type=int,default=5)
-    parser.add_argument('--freeze_delta',type=float,default=0.01)
+    parser.add_argument('--freeze_delta',type=float,default=0.005)
     
     parser.add_argument('--stop_patience',type=int,default=5)
-    parser.add_argument('--stop_delta',type=float,default=0.005)
+    parser.add_argument('--stop_delta',type=float,default=0.001)
 
     # model config
     parser.add_argument('--slide_win',type=int,default=200)
@@ -49,9 +49,6 @@ def myconfig():
     parser.add_argument('--level', type=float, default=0.99)
     parser.add_argument('--q', type=float, default=0.001)
     
-    parser.add_argument('--bf_search_min', default=0, type=float)
-    parser.add_argument('--bf_search_max', default=0.5, type=float)
-    parser.add_argument('--bf_search_step_size', default=0.001, type=float)
     parser.add_argument('--fc_dim', type=int, default=0)
     
     args = parser.parse_args()
@@ -92,9 +89,7 @@ def myconfig():
         'small_win':args.small_win,
         'embed_time':args.embed_time,
         'level':args.level,
-        'bf_search_min':args.bf_search_min,
-        'bf_search_max':args.bf_search_max,
-        'bf_search_step_size':args.bf_search_step_size,
+        'q':args.q,
         'fc_dim':args.fc_dim
     }
     
