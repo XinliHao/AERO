@@ -12,8 +12,7 @@ def test(model, data_loader,env_config, model_config):
     
     print('{}Testing {} on {}{}'.format(color.HEADER, env_config['model_name'], env_config['dataset_name'],color.ENDC))
     start = time()
-    if 'AERO' in env_config['model_name'] or 'StaticGraph' in env_config['model_name'] or \
-        env_config['model_name'] == 'MultiVariate' or env_config['model_name'] == 'DynamicGraph' or env_config['model_name'] == 'ShortGraph':
+    if 'AERO' in env_config['model_name']:
         lossFunction = nn.MSELoss(reduction='none')
         torch.zero_grad = True
         model.eval()
@@ -46,28 +45,4 @@ def test(model, data_loader,env_config, model_config):
             'loss1':loss1_tensor.cpu().detach().numpy(),
             'pred12':pred12_wo_window.cpu().detach().numpy(),
             'pred1':pred1_wo_window.cpu().detach().numpy()
-        }
-     
-    elif env_config['model_name'] == 'OnlyTemporalMulti' or env_config['model_name']=='OnlyTemporal' or env_config['model_name']=='OnlyConcurrent' :
-        lossFunction = nn.MSELoss(reduction='none')
-        torch.zero_grad = True
-        model.eval()
-        pred1, loss1_list = [], []
-        for d in data_loader:
-            with torch.no_grad():
-                recon1 = model(d)
-            pred1.append(recon1)
-            short_data = d[:, -model_config['small_win']:, 1:]
-            loss1_last_time = lossFunction(recon1, short_data)[:, -1, :]  # [batch，window，feature]
-
-            loss1_list.append(loss1_last_time)
-    
-        loss1_tensor = torch.cat(loss1_list, 0).cpu()
-        pred1_tensor = torch.cat(pred1, 0)
-        pred1_wo_window = pred1_tensor[:, -1, :]
-
-        print('Testing time: ' + "{:10.4f}".format(time() - start) + ' s')
-        return {
-            'loss1': loss1_tensor.cpu().detach().numpy(),
-            'pred1': pred1_wo_window.cpu().detach().numpy()
         }

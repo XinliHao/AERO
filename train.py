@@ -24,8 +24,6 @@ class EarlyStopping:
         if self.best_loss is None:
             self.best_loss = loss
         elif self.best_loss - loss < self.delta:
-        # 这个在最后的消融实验之前是没有大于零这个约束的，只在032_22790425-G0014这个数据集上
-        # elif self.best_loss - loss < self.delta  and self.best_loss - loss > 0 :
             self.counter += 1
             print("diff",f'{self.best_loss - loss}')
             print(f'Early counter: {self.counter} out of {self.patience}')
@@ -55,8 +53,7 @@ def train(env_config,train_config,model_config,model,optimizer,scheduler,pre_epo
     early_freezing = EarlyStopping(patience=train_config['freeze_patience'], delta=train_config['freeze_delta'])
     early_stopping = EarlyStopping(patience=train_config['stop_patience'], delta=train_config['stop_delta'])
     
-    if env_config['model_name'] == 'AERO' or env_config['model_name'] == 'StaticGraph' \
-        or env_config['model_name'] == 'MultiVariate' or env_config['model_name'] == 'DynamicGraph' or env_config['model_name'] == 'ShortGraph':
+    if env_config['model_name'] == 'AERO':
         for e in range(pre_epoch + 1, pre_epoch + num_epochs + 1):
             lossFunction = nn.MSELoss(reduction='none')
             losssave = []
@@ -81,7 +78,7 @@ def train(env_config,train_config,model_config,model,optimizer,scheduler,pre_epo
                 optimizer.step()
                 optimizer.zero_grad()
 
-            scheduler.step(loss_batch_mean)   #更新lr
+            scheduler.step(loss_batch_mean)
             loss_epoch_mean = np.mean(losssave)
             accuracy_list.append((loss_epoch_mean, optimizer.param_groups[0]['lr']))
             tqdm.write(f'Epoch {e},\tL1 = {loss_epoch_mean}')
@@ -106,44 +103,6 @@ def train(env_config,train_config,model_config,model,optimizer,scheduler,pre_epo
                         print("Early stopping")
                         break
     
-    elif env_config['model_name'] == 'OnlyTemporalMulti' or env_config['model_name'] == 'OnlyTemporal'or env_config['model_name'] == 'OnlyConcurrent':
-        for e in range(pre_epoch + 1, pre_epoch + num_epochs + 1):
-            lossFunction = nn.MSELoss(reduction='none')
-            losssave = []
-            print("\n===========================")
-            print("第%d个epoch开始，当前学习率：%f" % (e, optimizer.param_groups[0]['lr']))
-            for i, d in enumerate(data_loader):
-                cuda_d = d.float().to(env_config['device'])
-                recon1 = model(cuda_d)
-                short_data = cuda_d[:, -model_config['small_win']:, 1:]
-                loss_batch_mean = torch.mean(lossFunction(recon1, short_data))
-                losssave.append(loss_batch_mean.item())
-                loss_batch_mean.backward()
-                optimizer.step()
-                optimizer.zero_grad()
-
-            scheduler.step(loss_batch_mean)  # 更新lr
-            loss_epoch_mean = np.mean(losssave)
-            accuracy_list.append((loss_epoch_mean, optimizer.param_groups[0]['lr']))
-            tqdm.write(f'Epoch {e},\tL1 = {loss_epoch_mean}')
-            if vali_loader is not None:
-                avg_vali_loss = np.mean(valid(model, vali_loader, env_config, model_config))
-                print('avg_vali_loss', avg_vali_loss)
-                early_stopping(avg_vali_loss)
-                if early_stopping.early_freeze:
-                    print("Early stopping")
-                    break
-            else:
-                early_stopping(loss_epoch_mean)
-                if early_stopping.early_freeze:
-                    print("Early stopping")
-                    break
-
     print('Training and validing time: ' + "{:10.4f}".format(time() - start) + ' s')
     folder = 'checkpoints/{}_{}'.format(env_config['model_name'], env_config['dataset_name'])
     save_model(model, optimizer, scheduler, e, accuracy_list, folder)
-
-    # 学习率、损失变化图
-    # plot_accuracies(accuracy_list, '{}_{}_{}'.format(env_config['model_name'], env_config['dataset_name'],env_config['graph_type']))
-    
-    

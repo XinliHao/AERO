@@ -113,28 +113,11 @@ class Main():
         self.plot_save(result,self.labels,resultT)
 
     def plot_save(self,result,labels,resultT):
-        if 'AERO' in env_config['model_name'] or 'StaticGraph' in env_config['model_name'] or 'MultiVariate' in env_config['model_name'] or env_config['model_name']== 'DynamicGraph' or env_config['model_name']== 'ShortGraph':
-            result_flat, predict_label_flat, f1_list_flat, f1auc_flat = flat_pot_eval(result['loss12'], result['loss12'], labels[model_config['slide_win']:], q=model_config['q'],level=model_config['level'])
-            print('=' * 30 + 'result' + '=' * 30)
-            pprint(result_flat)
-
-            plotTwoLoss('{}_{}'.format(env_config['model_name'],env_config['dataset_name']), self.test[model_config['slide_win']:, 1:], result['pred12'], result['pred1'], result['loss12'],
-                           result['loss1'],  labels[model_config['slide_win']:], predict_label_flat, result_flat, booltrain='test')
-            plotTwoLoss('{}_{}'.format(env_config['model_name'],env_config['dataset_name']), self.train[model_config['slide_win']:, 1:], resultT['pred12'], resultT['pred1'], resultT['loss12'],
-                           resultT['loss1'], labels[model_config['slide_win']:], predict_label_flat, result_flat,booltrain='train')
-
-            plotauc('{}_{}'.format(env_config['model_name'],env_config['dataset_name']), f1_list_flat, f1auc_flat, 'flat')
         
-        if 'OnlyTemporal' in env_config['model_name'] or env_config['model_name']=='OnlyTemporalMulti' or env_config['model_name']=='OnlyConcurrent':
-            result_flat, predict_label_flat, f1_list_flat, f1auc_flat = flat_pot_eval(result['loss1'], result['loss1'],labels[model_config['slide_win']:],q=model_config['q'],level=model_config['level'])
-            plotOneLoss('{}_{}_{}'.format(env_config['model_name'], env_config['dataset_name'], env_config['graph_type']),
-                         self.test[model_config['slide_win']:, 1:], result['pred1'], result['loss1'], labels[model_config['slide_win']:], predict_label_flat, result_flat, booltrain='test')
-            plotOneLoss('{}_{}_{}'.format(env_config['model_name'], env_config['dataset_name'], env_config['graph_type']),self.train[model_config['slide_win']:, 1:], resultT['pred1'],
-                resultT['loss1'], labels[model_config['slide_win']:], predict_label_flat, result_flat,booltrain='train')
-
-            plotauc('{}_{}_{}'.format(env_config['model_name'], env_config['dataset_name'], env_config['graph_type']),f1_list_flat, f1auc_flat, 'flat')
-            pprint(result_flat)
-        
+        result_flat, predict_label_flat, f1_list_flat, f1auc_flat = flat_pot_eval(result['loss12'], result['loss12'], labels[model_config['slide_win']:], q=model_config['q'],level=model_config['level'])
+        print('=' * 30 + 'result' + '=' * 30)
+        pprint(result_flat)
+    
         if not os.path.exists(os.path.join(env_config['output_folder'],'result.csv')):
             df = pd.DataFrame(columns=['time', 'dataset_name', 'model_name','f1','precision','recall','TP','TN','FP','FN','threshold',
                                        'test','retrain','batch_size','epoch_num','init_lr','freeze_patience','freeze_delta','stop_patience','stop_delta',

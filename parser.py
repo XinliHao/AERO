@@ -20,7 +20,7 @@ def myconfig():
     parser = argparse.ArgumentParser(description='Time-Series Anomaly Detection')
     
     # env.config
-    parser.add_argument('--dataset_name',metavar='-d',type=str,required=False,default='AstrosetLow',help="dataset name")
+    parser.add_argument('--dataset_name',metavar='-d',type=str,required=False,default='SyntheticMiddle',help="dataset name")
     parser.add_argument('--model_name', metavar='-m', type=str, required=False, default='AERO')
 
     parser.add_argument('--device', type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")
@@ -36,10 +36,10 @@ def myconfig():
     
     parser.add_argument('--lr', type=float, default=0.001)
     parser.add_argument('--freeze_patience',type=int,default=5)
-    parser.add_argument('--freeze_delta',type=float,default=0.005)
+    parser.add_argument('--freeze_delta',type=float,default=0.01)
     
     parser.add_argument('--stop_patience',type=int,default=5)
-    parser.add_argument('--stop_delta',type=float,default=0.001)
+    parser.add_argument('--stop_delta',type=float,default=0.01)
 
     # model config
     parser.add_argument('--slide_win',type=int,default=200)
