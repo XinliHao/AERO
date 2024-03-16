@@ -1,4 +1,4 @@
-# AERO,  From Chaos to Clarity: Time Series Anomaly Detection in Astronomical Observations(ICDE 2024)
+# From Chaos to Clarity: Time Series Anomaly Detection in Astronomical Observations(ICDE 2024)
 
 This is PyTorch implementation of AERO in the following paper: 
 
