@@ -3,7 +3,20 @@
 This is PyTorch implementation of AERO in the following paper: 
 
 "From Chaos to Clarity: Time Series Anomaly Detection in Astronomical Observations"
+```
+@INPROCEEDINGS{10598045,
+  author={Hao, Xinli and Chen, Yile and Yang, Chen and Du, Zhihui and Ma, Chaohong and Wu, Chao and Meng, Xiaofeng},
+  booktitle={2024 IEEE 40th International Conference on Data Engineering (ICDE)}, 
+  title={From Chaos to Clarity: Time Series Anomaly Detection in Astronomical Observations}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={570-583},
+  keywords={Learning systems;Noise;Time series analysis;Stars;Transformers;Data engineering;Graph neural networks;Time series;Anomaly detection;AI for science},
+  doi={10.1109/ICDE60146.2024.00050}}
 
+
+```
 ## Requirements
 
 Dependency can be installed using the following command:
